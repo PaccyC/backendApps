@@ -4,14 +4,20 @@ const mongoose=require('mongoose');
  const app=express();
  const Blog=require('./models/blog');
 const res = require('express/lib/response');
+const { findById } = require('./models/blog');
+const { render } = require('express/lib/response');
 
  const dburl='mongodb://localhost:27017';
  mongoose.connect(dburl)
- .then((result) =>app.listen(5002))
+ .then((result) =>app.listen(5003))
  
  .catch((err)=>console.log(err))
  //register view engine
  app.set('view engine','ejs');
+
+ //middleware and static files
+ app.use(express.static('public'));
+ app.use(express.urlencoded({extends:true}))
 
 // app.listen(5001);
 app.use((req,res,next)=>{
@@ -63,15 +69,36 @@ app.get('/single-blog',(req,res)=>{
 // app.use(express.status( 'public')); 
 
 app.get('/',(req,res)=>{
+    res.redirect('/blogs');
     //   res.send('Home Page' );
-    const blogs=[
-        {title:'paccy is a boy',snippets:'Paccy like his mother'},
-        {title:'paccy is a boy',snippets:'Paccy like his mother'},
-        {title:'paccy is a boy',snippets:'Paccy like his mother'},
+    // const blogs=[
+    //     {title:'paccy is a boy',snippets:'Paccy like his mother'},
+    //     {title:'paccy is a boy',snippets:'Paccy like his mother'},
+    //     {title:'paccy is a boy',snippets:'Paccy like his mother'},
 
-    ]
-    res.render('index2',{title:'Home',blogs});
+    // ]
+    // res.render('index2',{title:'Home',blogs});
+
     
+}) 
+app.post('/blogs',(req,res)=>{
+    // console.log(req.body);
+    const blog=new Blog(req.body);
+    blog.save()
+    .then((result)=>{
+        res.redirect('/blogs');
+    })
+    .catch((err)=>{
+        console.log(err);
+    })
+})
+app.get('/blogs/:id',(req,res)=>{
+    const id=req.params.id
+    console.log(id);
+   Blog.findById(id)
+   .then(result=>{
+    render('deatails',{blogs:result , title:'My blog'})
+   })
 })
 
 app.get('/about',(req, res)=>{
@@ -92,6 +119,17 @@ app.get('/404',(req,res)=>{
 app.get('/about-me',(req,res)=>{
     res.redirect('/about')
 })
+//blog routes 
+app.get('/blogs',(req,res)=>{
+    Blog.find().sort({createdAt:-1})
+    .then((result)=>{
+    res.render('index2',{title:'All blogs',blogs:result})
+    })
+    .catch(err=>{
+
+    })
+})
+
 app.get('/blogs/create',(req,res)=>{
     res.render('create',{title:"created blogs"});
 })

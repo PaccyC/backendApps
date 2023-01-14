@@ -1,0 +1,16 @@
+<html>
+    <head>
+    <%- include("./partials/head.ejs")%>
+</head>
+<body>
+    <%- include("./partials/nav.ejs")%>
+    <div class="details content">
+        <h2><%= blog.title%></h2>
+        <div class="content">
+            <p><% blog.body %></p>
+            <a class="delete" data-doc="<%= blogs._id%>">delete</a>
+        </div>
+        <%- include("./partials/footer.ejs")%>
+    </div>
+</body>
+</html>
