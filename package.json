@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.ujs",
   "scripts": {
-    "start": "node api.js && nodemon Yh.js",
-    "preinstall": "node dist/setup.js"
+    "start": "nodemon Yh.js"
   },
   "keywords": [],
   "author": "",
